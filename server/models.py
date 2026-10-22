@@ -48,6 +48,41 @@ class Post(db.Model):
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
     # Add validators  
+    @validates("title")
+    def validate_title(self, key, title):
+        if not title:
+            raise ValueError("Title is required.")
+        if not isinstance(title, str):
+            raise ValueError("Title must be valid string.")
+        if not any(kw.lower() in title.lower() for kw in ["Won't Believe", "Secret", "Top", "Guess"]):
+            raise ValueError("Title must contain secret keywords...")
+        return title
+    
+    @validates("content")
+    def validate_content(self, key, content):
+        if not content:
+            raise ValueError("Content is required.")
+        if not isinstance(content, str):
+            raise ValueError("Content must be a valid string.")
+        if not len(content) >= 250:
+            raise ValueError("Content must be at least 250 characters.")
+        return content
+    
+    @validates("category")
+    def validate_category(self, key, category):
+        if not category:
+            raise ValueError("Category is required.")
+        if category not in ["Fiction", "Non-Fiction"]:
+            raise ValueError("Category must be 'Fiction' or 'Non-Fiction' only.")
+        return category
+    
+    @validates("summary")
+    def validate_summary(self, key, summary):
+        if not summary:
+            raise ValueError("Summary is required.")
+        if len(summary) > 250:
+            raise ValueError("Summary must not be longer than 250 characters.")
+        return summary
 
 
     def __repr__(self):
